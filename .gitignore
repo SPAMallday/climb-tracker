@@ -1,1 +1,5 @@
-     .idea/
+.idea/
+
+#video file
+videos/
+*.mp4
