@@ -3,19 +3,32 @@
 import cv2 as cv
 
 # 트랙커 객체 생성자 함수 리스트 ---①
-trackers = [cv.TrackerMIL_create,
+trackers = [
+            # 밝은 배경에 흰옷 회색바지 트래킹 잘 됨, 다이노 추적 불가
+            # 좀 빠름
+            cv.TrackerMIL_create,
+            # 그나마 제일 빠름
             cv.TrackerKCF_create,
-            # cv.TrackerGOTURN_create, #버그로 오류 발생
-            cv.TrackerCSRT_create,  # 유일하게 다이노 추적이 가능한 알고리즘
-            cv.TrackerDaSiamRPN_create, # Can't read ONNX file
-            cv.TrackerNano_create]  # Can't read ONNX file
+            # cv.TrackerGOTURN_create,
+            # 유일하게 다이노 추적이 가능한 알고리즘, 밝은 배경에 흰옷 회색바지 트래킹 잘 안될 수 있음
+            # 느리지만 위 2가지보다 강한 추적
+            cv.TrackerCSRT_create,
+            # legacy APIs
+            cv.legacy.TrackerBoosting_create,
+            cv.legacy.TrackerMedianFlow_create, # 추적이 잘 안됨
+            cv.legacy.TrackerMOSSE_create,  # 어느정도 빠르게 추적이 되지만 다이노 불가
+            cv.legacy.TrackerTLD_create,    # 너무 튐
+            ]
+# TODO 중간에 자꾸 놓치는 이유가 뭘까.. 배경색이랑 사람이랑 구분이 힘들어서? -> 객체 외곽선 추출해서 트래킹?
 
 trackerIdx = 0  # 트랙커 생성자 함수 선택 인덱스
 tracker = None
 isFirst = True
 
-video_src = 0 # 비디오 파일과 카메라 선택 ---②
-video_src = "./videos/dyno_s.mp4"
+# 비디오 파일과 카메라 선택 ---②
+# video_src = "./videos/dyno_s.mp4"
+# video_src = "./videos/walk&dyno.mp4"
+video_src = "./videos/static.mp4"
 cap = cv.VideoCapture(video_src)
 fps = cap.get(cv.CAP_PROP_FPS) # 프레임 수 구하기
 delay = int(1000/fps)
